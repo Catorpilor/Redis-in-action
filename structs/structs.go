@@ -11,4 +11,11 @@ type Article struct {
 type User struct {
 	Name     string `redis:"name"`
 	Password string `redis:"password"`
+	Funds    string `redis:"funds"`
+}
+
+type Inv struct {
+	Quantity    string `redis:'qty'`
+	Name        string `redis:'name'`
+	Description string `redis:'description'`
 }

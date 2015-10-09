@@ -132,6 +132,7 @@ func article_vote(user, article string, vt VTYPE) {
 }
 
 func getArticlesByPage(page int, order string) (articles []*structs.Article) {
+
 	start := (page - 1) * ARTICLES_PER_PAGE
 	end := start + ARTICLES_PER_PAGE - 1
 	ids, err := redis.Values(c.Do("ZREVRANGE", order, start, end))
@@ -142,12 +143,21 @@ func getArticlesByPage(page int, order string) (articles []*structs.Article) {
 			err.Error())
 		return
 	}
+	//TODO
+	//using pipeline to improve performance
+	//c.Send("MULTI")
+	//c.Send("COMMAND1")
+	//c.Send("EXEC")
+	c.Send("MULTI")
 	for _, id := range ids {
-		v, err := redis.Values(c.Do("HGETALL", id))
-		if err != nil {
-			fmt.Errorf("HGETALL %v get error %v", id, err.Error())
-			continue
-		}
+		c.Send("HGETALL", id)
+	}
+	results, err := redis.Values(c.Do("EXEC"))
+	if err != nil {
+		fmt.Errorf("MUTLI/EXEC got error %v", err.Error())
+		return
+	}
+	for _, v := range ids {
 		p := &structs.Article{}
 		if err := redis.ScanStruct(v, p); err != nil {
 			fmt.Errorf("ScanStruct got error %v", err.Error())
