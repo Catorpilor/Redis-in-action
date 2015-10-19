@@ -268,8 +268,9 @@ func rescaleViewd() {
 			case <-quit:
 				return
 			default:
-				c.Do("ZREMRANGEBYRANK", "viewed:", 20000, -1) //remove items not in top 20000
-				c.Do("ZINTERSTORE", "viewed:", 1, "viewed:", "weight", 0.5)
+				c.Send("ZREMRANGEBYRANK", "viewed:", 20000, -1) //remove items not in top 20000
+				c.Send("ZINTERSTORE", "viewed:", 1, "viewed:", "weight", 0.5)
+				c.Flush()
 				time.Sleep(30 * time.Minute)
 			}
 		}
