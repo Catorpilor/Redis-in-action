@@ -15,7 +15,7 @@ type User struct {
 }
 
 type Inv struct {
-	Quantity    string `redis:'qty'`
-	Name        string `redis:'name'`
-	Description string `redis:'description'`
+	Quantity    string `redis:"qty"`
+	Name        string `redis:"name"`
+	Description string `redis:"desc"`
 }
